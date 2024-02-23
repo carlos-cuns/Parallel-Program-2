@@ -12,27 +12,27 @@ public class Program2
         ArrayList<Thread> threads = new ArrayList<>();
 
         // first guest is the announcer
+        System.out.println("=================================================================================");
         System.out.println("\t\t\t\tBefore Game:\n");
         System.out.println("[Announcer]: \n\t\t\"I will keep track of how many cupcakes are handed out!\"");
         System.out.println("\t\t\"Only eat a cupcake if you have never had one.\"");
-        System.out.println("\n\t\t\t\tGame Start!");
+        System.out.println("=================================================================================");
+        System.out.println("\t\t\tGame Start - Cupcake #1 is on the plate.");
 
-        Thread announcer = new Thread(new Guest(lab, true));
-        announcer.start();
         for (int i = 1; i < totalGuests; i++)
         {
             Thread t = new Thread(new Guest(lab, false));
             t.start();
             threads.add(t);
         }
+        Thread announcer = new Thread(new Guest(lab, true));
+        announcer.start();
+        threads.add(announcer);
         
-        announcer.join();
         for(Thread t : threads)
         {
             t.join();
         }
-
-        return;
     }
 }
 
@@ -53,11 +53,17 @@ class Guest implements Runnable {
             {
                 // only set to true when a guest eatis first cupcake
                 ate = true;
+                System.out.println("\n[Guest]: eats a cupcake");
             }
         }
         if(announcer)
         {
-            System.out.println("\n[Announcer] to Minotaur: \n\t\t\"All guests have eaten and therefore visited!\"");
+            ate = true;
+            System.out.println("\n\t     \"I will eat this last cupcake.\"");
+        System.out.println("=================================================================================");
+        System.out.println("\t\t\t\tTo End Game:\n");
+        System.out.println("[Announcer] to Minotaur: \n\t\t\"All guests have eaten and therefore visited!\"");
+        System.out.println("=================================================================================");
         }
     }
 }
@@ -88,10 +94,9 @@ class Labyrinth
             if (announcer) {
                 if (!cupcake) {
                     // if the plate is empty we know that a new guest has gone through
-                    System.out.println("\n[Announcer] to self: \n\t\t\"Placing cupcake #"+ cupcakesHandedOut.get()+"\"");
                     cupcakesHandedOut.incrementAndGet();
+                    System.out.println("\n[Announcer]: Placing cupcake #"+ cupcakesHandedOut.get());
                     cupcake = true;
-                    //requestCupcake();
                 }
             } else {
                 if (!ate) {
