@@ -41,7 +41,7 @@ The most difficult part of coming up with a solution was trying to figure out ho
 
 ### Strategy
 
-To keep maximum order and a sure method that everyone will see the vase, the guests came up with the following strategy (#3):
+To keep maximum order and a sure method that everyone will see the vase, the guests came up with following strategy 3.
 
 ### Advantages / Disadvantages
 
