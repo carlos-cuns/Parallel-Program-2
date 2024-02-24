@@ -5,7 +5,6 @@
 ```
 javac Program2.java
 java Program 2
-
 ```
 
 In the main function you can set the totalGuest to the number of guests invited.
@@ -32,6 +31,8 @@ My correctness is evident when seeing the visuals provided by the output.
 - Every guest is shown consuming one single cupcake
 - The announcer is shown to place N - 1 cupcakes since the first is placed by the Minotaur
 
+Using the notes, I knew that I should use a lock for any actions that had to be mutually exclusive.
+
 ### Experimentation
 
 The most difficult part of coming up with a solution was trying to figure out how any of the guests could keep track of the others with out everyone communicating (Having some sort of global tracker that everyone can access). I solved this by having the announcer have more permissions than the rest and having only them keep track of everything through a personal global counter.
@@ -40,24 +41,15 @@ The most difficult part of coming up with a solution was trying to figure out ho
 
 ### Strategy
 
-The Minotaur informs the guests that they should decide how to organize themselves so that only one person can enter the showroom at once.
-
 To keep maximum order and a sure method that everyone will see the vase, the guests came up with the following strategy (#3):
-
-- The third strategy would allow the quests to line in a queue.
-- Every guest exiting the room was responsible to notify the guest standing in front of the queue that theshowroom is available.
-
-Every guest rushes to enter the line (queue) and eventually they all get to look at the vase.
 
 ### Advantages / Disadvantages
 
 - Open Door Strategy:
   - Advantages:
     - Anyone can check if the room is in use.
-    - No waiting in line.
   - Disadvantages:
     - Since anyone can check, a crowd can form which can cause blockage in the party.
-    - Crowd could make it so one guest can go multiple times in a row if they go in and out (door blocked) making everyone have to wait indefinitely.
 - Sign Strategy:
   - Advantages:
     - Sign let's the whole party see without everyone crowding the door.
@@ -77,11 +69,8 @@ Every guest rushes to enter the line (queue) and eventually they all get to look
 The efficiency is that everyone is able to join the queue quickly and then they are processed in order. This means that there is no confusion between guests (Threads). The current guest is stored (put into room) and then when they exit they can notify the next guest to enter (store and pop).
 
 The correctness is visible in the visuals provided by the outputed statement:
-
-- every guest is shown to enter the showroom and then notify the next guest when exiting
+every guest is shown to enter the showroom and then notify the next guest when exiting
 
 ### Experimentation
 
-Experimentation started when finding the advantages and disadvantages of every strategy. After that, I had to make sure I created a concurrent queue of the proper type and then that every guest was able to join and exit.
-
-The main problem to solve here was to make sure only one person entered the showroom at once. I figured that I could use a lock when a thread entered the room and then unlock it when they exited.
+The main problem to solve here was to make sure only one person entered the showroom at once. I figured that I could use a lock when a thread entered the room and then unlock it when they exited. The queue was solved by implementing a concurrent queue data structure.
