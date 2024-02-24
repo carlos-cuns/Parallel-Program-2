@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -8,16 +9,17 @@ public class Program2
     final static int totalGuests = 10;
     public static void main(String args[]) throws InterruptedException
     {
+        // Problem 1
         Labyrinth lab = new Labyrinth(totalGuests);
         ArrayList<Thread> threads = new ArrayList<>();
 
         // first guest is the announcer
         System.out.println("=================================================================================");
         System.out.println("\t\t\t\tBefore Game:\n");
-        System.out.println("[Announcer]: \n\t\t\"I will keep track of how many cupcakes are handed out!\"");
-        System.out.println("\t\t\"Only eat a cupcake if you have never had one.\"");
+        System.out.println("[Announcer]: \"I will keep track of how many cupcakes are handed out!\"");
+        System.out.println("\t     \"Only eat a cupcake if you have never had one.\"");
         System.out.println("=================================================================================");
-        System.out.println("\t\t\tGame Start - Cupcake #1 is on the plate.");
+        System.out.println("\t\t   Game Start - Cupcake #1 is on the plate.");
 
         for (int i = 1; i < totalGuests; i++)
         {
@@ -32,7 +34,29 @@ public class Program2
         for(Thread t : threads)
         {
             t.join();
+        } 
+
+        // Problem 2
+        System.out.println("\t\t\t    Crystal Vase Exposition\n");
+        System.out.println("[Announcer]: \"The Minotaur would like everyone to see his Crystal Vase.\"");
+        System.out.println("\t     \"We have decided that a line (queue) is the best way to do so.\"");
+        System.out.println("=================================================================================");
+        System.out.println("\t\t\t    Queue and Showroom\n");
+
+        Showroom showroom = new Showroom();
+        VaseGuest[] Qthreads = new VaseGuest[totalGuests];
+        // Create five guests
+        for (int i = 0; i < totalGuests; i++)
+        {
+            Qthreads[i] = new VaseGuest(i + 1, showroom);
+            Qthreads[i].start();
         }
+
+        for (VaseGuest t : Qthreads) {
+            t.join();
+        }
+        System.out.println("=================================================================================");
+
     }
 }
 
@@ -59,10 +83,10 @@ class Guest implements Runnable {
         if(announcer)
         {
             ate = true;
-            System.out.println("\n\t     \"I will eat this last cupcake.\"");
+            System.out.println("[Announcer]: \"I will eat this last cupcake.\"");
         System.out.println("=================================================================================");
         System.out.println("\t\t\t\tTo End Game:\n");
-        System.out.println("[Announcer] to Minotaur: \n\t\t\"All guests have eaten and therefore visited!\"");
+        System.out.println("[Announcer] to Minotaur: \"All guests have eaten and therefore visited!\"");
         System.out.println("=================================================================================");
         }
     }
@@ -113,5 +137,47 @@ class Labyrinth
         }
         return eat;
     }
-
 }
+
+class VaseGuest extends Thread {
+    public final int num;
+    private final Showroom showroom;
+
+    public VaseGuest(int num, Showroom showroom) {
+        this.num = num;
+        this.showroom = showroom;
+    }
+
+    @Override
+    public void run() {
+        showroom.enterQueue(this);
+        showroom.enterShowroom();
+    }
+}
+
+class Showroom {
+    private final ConcurrentLinkedQueue<VaseGuest> guestQueue = new ConcurrentLinkedQueue<>();
+    private VaseGuest currentG;
+    private Lock lock = new ReentrantLock();
+
+    public void enterQueue(VaseGuest g) {
+        guestQueue.offer(g);
+    }
+
+    public void enterShowroom() 
+    {
+        lock.lock();
+        VaseGuest g = guestQueue.poll();
+        if (g != null) {
+            String display = "Guest " + g.num + " entered the showroom";
+            if(currentG != null)
+            {
+                display += " after Guest " + currentG.num + " notified them";
+            }
+            System.out.println(display + ".");
+            currentG = g;
+        }
+        lock.unlock();
+    }
+}
+
