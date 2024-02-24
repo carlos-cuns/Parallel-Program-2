@@ -4,7 +4,7 @@
 
 ```
 javac Program2.java
-java Program 2
+java Program2
 ```
 
 In the main function you can set the totalGuest to the number of guests invited.
